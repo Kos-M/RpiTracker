@@ -1,3 +1,9 @@
+/**
+ * Author : Kos-M
+ * Date : 11/3/2020
+ * Description: This is websocket client ,implement to run in any raspberry pi
+ * in order to get info about os , running programms and general purpose controlling.
+ */
 const WebSocket = require('ws');
 const exec = require('child_process').exec;
 const moment = require('moment');
@@ -19,7 +25,7 @@ async function connect() {
 	ws.on('close', function close() {
 		console.log('disconnected from server.');
 		ws.terminate();
-		setTimeout(() => {
+		setTimeout(() => { 
 			connect();
 		}, RECONECT_TIMEOUT);
 	});

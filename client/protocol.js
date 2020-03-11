@@ -1,5 +1,5 @@
 const Protocol = {
-    Connected: "101",
+    Connected: "100",
     Connecting: "101",
     DisConnect: "102",
     GetUpTime: "up_time",

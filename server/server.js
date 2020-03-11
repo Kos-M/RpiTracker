@@ -1,3 +1,9 @@
+/**
+ * Author : Kos-M
+ * Date : 11/3/2020
+ * Description: This is websocket server ,its supposed to run in a server with a domain , or a static ip
+ * in order all clients can reach it .All connections are client initiated , server is here to gather all info.
+ */
 const WebSocket = require('ws');
 const Protocol = require('./protocol');
 const moment = require('moment');

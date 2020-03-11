@@ -1,5 +1,6 @@
 /**
  * Author : Kos-M
+ * Email : t13droid@gmail.com
  * Date : 11/3/2020
  * Description: This is websocket client ,implement to run in any raspberry pi
  * in order to get info about os , running programms and general purpose controlling.
@@ -38,8 +39,14 @@ async function connect() {
 				console.log('[ ' + now.toLocaleTimeString() + " ] Connection with server established.")
 				break;
 			case Protocol.GetUpTime:
-				let app = exec("uptime -p", await execCB);	
+				exec("uptime -p", await execCB);	
 				break;		
+			case Protocol.DO_REBOOT:
+				exec("reboot now", await execCB);	
+				break;
+			case Protocol.DO_SHUTDOWN:
+				exec("shtudown now", await execCB);	
+				break;							
 			default:
 			    now = new Date();
 				console.log('[ ' + now.toLocaleTimeString() + " ] Received not known message :" + data);

@@ -1,31 +1,61 @@
 const WebSocket = require('ws');
-function connect() {
-	const ws = new WebSocket('ws:///localhost:8080');
+const exec = require('child_process').exec;
+const moment = require('moment');
+const Protocol = require('./protocol');
+const SERVER = "ws:///localhost:8080";
+const RECONECT_TIMEOUT = 10000;
+const KEEP_ALIVE = 12000;
+
+async function connect() {
+	const ws = new WebSocket(SERVER);
+	ws.on('error', function (e) {
+		console.log(e.code + " " + e.address + " port:" + e.port);
+	});
 	ws.on('ping', heartbeat);
 	ws.on('open', function open() {
-    	heartbeat();
-    	ws.send('connecting');
+		ws.send(Protocol.Connecting);
+		heartbeat();
 	});
 	ws.on('close', function close() {
-	console.log('disconnected from server.');
-	clearTimeout(this.pingTimeout);
-    setTimeout(() => {
-    	connect();
-  	}, 5000);
+		console.log('disconnected from server.');
+		ws.terminate();
+		setTimeout(() => {
+			connect();
+		}, RECONECT_TIMEOUT);
 	});
-	ws.on('error', function (e) {
-		 console.log(e.code+" "+e.address + " port:"+e.port);
+
+	ws.on('message', async function incoming(data) {
+
+		switch (data) {
+			case Protocol.Connected:
+				now = new Date();
+				console.log('[ ' + now.toLocaleTimeString() + " ] Connection with server established.")
+				break;
+			case Protocol.GetUpTime:
+				let app = exec("uptime -p", await execCB);	
+				break;		
+			default:
+			    now = new Date();
+				console.log('[ ' + now.toLocaleTimeString() + " ] Received not known message :" + data);
+				break;
+		}
 	});
-	ws.on('message', function incoming(data) {
- 		console.log(data);
-	});
-function heartbeat() {
-  clearTimeout(this.pingTimeout);
-  console.log("ping")
-  this.pingTimeout = setTimeout(() => {
-    ws.terminate();
-  }, 10000 + 4000);
-}
+	function heartbeat() { // ping keep_alive
+		console.log("-")
+		clearTimeout(ws.pingTimeout);
+		ws.pingTimeout = setTimeout(() => {
+			ws.terminate();
+			console.log("Terminate Connection with server")
+		}, KEEP_ALIVE);
+
+	}
+	async function execCB(error, stdout, stderr) {
+		if (error) {
+			console.error(`exec error: ${error}`);
+			return;
+		}
+		ws.send(stdout)
+	}
 }
 
 

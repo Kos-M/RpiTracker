@@ -1,0 +1,26 @@
+Arguments: 
+  /data/data/com.termux/files/usr/bin/node /data/data/com.termux/files/usr/bin/yarn add ws
+
+PATH: 
+  /data/data/com.termux/files/usr/bin:/data/data/com.termux/files/usr/bin/applets
+
+Yarn version: 
+  1.19.1
+
+Node version: 
+  12.11.1
+
+Platform: 
+  android arm64
+
+Trace: 
+  Error: EFAULT: bad address in system call argument, copyfile '/data/data/com.termux/files/home/.cache/yarn/v6/npm-ws-7.2.1-03ed52423cd744084b2cf42ed197c8b65a936b8e-integrity/node_modules/ws/LICENSE' -> '/storage/emulated/0/Android/data/com.termux/files/devEdit/rpiTracker/server/node_modules/ws/LICENSE'
+
+npm manifest: 
+  No manifest
+
+yarn manifest: 
+  No manifest
+
+Lockfile: 
+  No lockfile

@@ -1,0 +1,59 @@
+extends ./_bootstrap
+append styles
+	// Custom styles for this template
+	link(href='/dashboard.css',   rel='stylesheet')
+block body  
+	nav.navbar.navbar-inverse.navbar-fixed-top
+		.container-fluid
+			.navbar-header
+				button.navbar-toggle.collapsed(type='button', data-toggle='collapse', data-target='#navbar', aria-expanded='false', aria-controls='navbar')
+					span.sr-only Toggle navigation
+					span.icon-bar
+					span.icon-bar
+					span.icon-bar
+				a.navbar-brand(href='/') RpiTracker
+			#navbar.navbar-collapse.collapse
+				ul.nav.navbar-nav.navbar-right
+					li
+						a(href='#settings') Settings
+					li
+						a(href='/logout') LogOut <!-- WIP -->
+				//form.navbar-form.navbar-right
+					input.form-control(type='text', placeholder='Search...')
+	.container-fluid
+		.row
+			.col-sm-3.col-md-2.sidebar
+				ul.nav.nav-sidebar
+					li.active
+						a(href='/') Dashboard							   
+							span.sr-only (current)
+					li
+						a(href='#') Reports
+				ul.nav.nav-sidebar
+					li
+						a(href='') Nav item
+			.col-sm-9.col-sm-offset-3.col-md-10.col-md-offset-2.main
+				h1.page-header Devices: #{active} #{clientInfo.length}
+				//h2.sub-header Section title
+				.table-responsive
+					table.table.table-striped
+						thead
+							tr
+								th #								 
+								th Hostname
+								th Os
+								th Ip
+								th Connected
+								th Uptime								
+								th Id
+						tbody    
+							each val , index  in clientInfo	
+								tr
+									td= index+1
+										each key in val																					
+												if (key == val.connected)
+													td= moment(key).fromNow()
+												else if (key == val.uptime)
+													td= moment(key).fromNow()
+												else
+													td= key	

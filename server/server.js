@@ -59,7 +59,7 @@ app.post('/auth', function (req, res) {
   var password = req.body.password;
   if (username && password) {
     //connection.query('SELECT * FROM accounts WHERE username = ? AND password = ?', [username, password], function(error, results, fields) {
-    if (username == "admin" && password == "root") {
+    if (username == "admin" && password == "changeme") {
       req.session.loggedin = true;
       res.redirect('/dashboard');
     } else {

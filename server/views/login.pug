@@ -61,11 +61,13 @@ head
     :-ms-input-placeholder {  
       text-align: center; 
     }
-h1(style='font-family: Tahoma, Geneva, sans-serif;') 
-  a(href='/') RpiTracker    
+    
 .login-form  
+  h1(style='font-family: Tahoma, Geneva, sans-serif;') 
+    a(href='/') RpiTracker
   h3(style='text-align:center') Login
   form(action='auth' method='POST')
     input(type='text' name='username' placeholder='Username' required='')
     input(type='password' name='password' placeholder='Password' required='')
     input(type='submit' value='LogIn' autofocus)
+     

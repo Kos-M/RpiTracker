@@ -8,7 +8,6 @@
 const WebSocket = require('ws');
 const Protocol = require('./protocol');
 const moment = require('moment');
-
 const session = require('express-session');
 const bodyParser = require('body-parser');
 const path = require('path');
@@ -23,8 +22,13 @@ const KEEP_ALIVE = 10000;
 const printConnections_Interval = 30000;
 var clientInfo = [];
 
+
+async function Logger(msg) {
+  let now = new Date();
+  console.log('\n[ ' + now.toLocaleTimeString() + " ] " + msg)
+}
 const wss = new WebSocket.Server({ port: PORT }, () => {
-  console.log("Server initiated , listeninng on " + PORT)
+  Logger("Server initiated , listeninng on " + PORT)
 });
 let active = wss._server._connections;
 setInterval(printConnections, printConnections_Interval);
@@ -45,7 +49,6 @@ app.use(sessionMidle);
 app.use(function (req, res, next) {
   res.active = active;
   res.clientInfo = clientInfo;
-
   next();
 });
 
@@ -69,42 +72,65 @@ app.post('/auth', function (req, res) {
     res.end();
   }
 });
-app.listen(ControlPort, () => console.log(`Admin web interface started on port ${ControlPort}`))
+app.listen(ControlPort, () => Logger(`Admin web interface started on port ${ControlPort}`))
 
 
 function noop() { }
 function heartbeat() { // pong
   this.isAlive = true;
-  console.log("+")
+  process.stdout.write("•")
 }
 wss.on('connection', function connection(ws, req) {
+  async function Send(msg) {
+    let obj = { "msg": `${msg}` }
+    let data = JSON.stringify(obj)
+    ws.send(data)
+  }
   ws.isAlive = true;
+  this.conn_establish_ = null;
   ws.on('pong', heartbeat);
+  ws.onclose = event => { //ws.readyState
+    Logger("socket closed with code: "+event.code)  
+    deleteByiD(ws.id)
+    // event.code === 1000
+    // event.reason === "Work complete"
+    // event.wasClean === true (clean close)
+  };
   ws.on('message', function incoming(message) {
     let ans = JSON.parse(message)
-    console.dir(ans)
+    //console.dir(ans)
     switch (ans.msg) {
       case Protocol.Connecting:
-        let Push = true;
         this.id = ans.id
-        this.now = new Date();
-        this.uptime = null
         this.ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || (req.connection.socket ? req.connection.socket.remoteAddress : null);
-        if (this.ip.substr(0, 7) == "::ffff:") {
+        if (this.ip.substr(0, 7) == "::ffff:")
           this.ip = this.ip.substr(7)
+        if (this.id === undefined) {
+          Send(Protocol.ERROR.INVALID_ID)
+          clearInterval(this.interval)
+          this.terminate()
+          Logger("ERROR :INVALID_ID client:" + this.ip)
+          break;
         }
-        //console.log('[ ' + now.toLocaleTimeString() + ' ] Client [%s] sends: %s ', ip, message + " " + moment(now).fromNow());
-        ws.send(Protocol.Connected);
-        ws.send(Protocol.GET_UP_TIME);
-        ws.send(Protocol.GET_OS);
-        ws.send(Protocol.GET_HOST_NAME);
+        let Push = true;
+        this.conn_establish_ = new Date();
+        Logger('Client ' + this.ip + ' connected ' + moment(this.conn_establish_).fromNow());
+        Send(Protocol.Connected);
+        Send(Protocol.GET_UP_TIME);
+        Send(Protocol.GET_OS);
+        Send(Protocol.GET_HOST_NAME);
         for (let i = 0; i < clientInfo.length; i++) {
-          if (clientInfo[i].id == this.id)
+          if (clientInfo[i].id == this.id) {
+            clientInfo[i].ip = this.ip;
             Push = false;
+          }
+          clientInfo[i].connected = this.conn_establish_;
         }
-        if (Push)
-          clientInfo.push({ "hostname": null, "os": null, "ip": this.ip, "connected": this.now, "uptime": this.uptime, "id": this.id })
-        active++;
+        if (Push) {
+          clientInfo.push({ "hostname": null, "os": null, "ip": this.ip, "connected": this.conn_establish_, "uptime": this.uptime, "id": this.id })
+          active++;
+        }
+
         break;
       case Protocol.ANS_UPTIME:
         this.uptime = ans.value
@@ -132,19 +158,20 @@ wss.on('connection', function connection(ws, req) {
         break;
       default:
         if (typeof (ans) != String) {
-          console.log("Uknown type of Object")
+          Logger("Uknown type of Object")
           console.dir(ans)
           break;
         }
-        console.log("Unknown type of incomming message :" + ans)
+        Logger("Unknown type of incomming message :" + ans)
     }
   });
 });
-const interval = setInterval(function ping() {
+this.interval = setInterval(function ping() {
   wss.clients.forEach(function each(ws) {
     if (ws.isAlive === false) {
-      console.log("terminate session")
+      Logger("terminate session")
       deleteByiD(ws.id)
+      clearInterval(this.interval)
       return ws.terminate();
     }
 
@@ -154,10 +181,10 @@ const interval = setInterval(function ping() {
 }, KEEP_ALIVE);
 
 async function printConnections() {
-  console.log("Connections:" + wss._server._connections)
+  //Logger("Connections:" + wss._server._connections)
   active = wss._server._connections
-  for (i = 0; i < clientInfo.length; i++)
-    console.dir(clientInfo[i])
+  // for (i = 0; i < clientInfo.length; i++)
+  //  console.dir(clientInfo[i])
 }
 function uuidv4() {
   return 'xxx-xxxx-xxxx'.replace(/[xy]/g, function (c) {

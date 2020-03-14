@@ -10,5 +10,8 @@ const Protocol = {
     ANS_UPTIME: "up_time",
     ANS_HOST_NAME: "host" ,
     ANS_OS: "os",
+    ERROR :{
+        INVALID_ID:"-10"
+    }
 }
 module.exports = Protocol;

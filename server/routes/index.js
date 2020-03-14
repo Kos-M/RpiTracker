@@ -28,6 +28,10 @@ router.get('/assets/img/repeat_sidebar.png', function (req, res, next) {
 router.get('/assets/img/login.png', function (req, res, next) {
     res.sendFile(path.join(__dirname + '/../' + '/assets/img/login.png'));
 })
+router.get('/js/context.js', function (req, res, next) {
+    res.sendFile(path.join(__dirname + '/../' + '/js/context.js'));
+})
+
 router.get('/logout', function (req, res, next) {
     req.session.loggedin = false;
     res.redirect('/');

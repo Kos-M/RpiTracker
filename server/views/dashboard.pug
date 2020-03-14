@@ -2,6 +2,13 @@ extends ./_bootstrap
 append styles
 	// Custom styles for this template
 	link(href='/dashboard.css',   rel='stylesheet')
+	link(href='//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css',   rel='stylesheet')
+	script(src="https://code.jquery.com/jquery-3.4.1.js")
+	script(src="https://code.jquery.com/ui/1.12.0-rc.2/jquery-ui.min.js")
+	script(src="https://cdnjs.cloudflare.com/ajax/libs/jquery.ui-contextmenu/1.18.1/jquery.ui-contextmenu.min.js")
+	script(src="/js/context.js")
+	
+	
 block body  
 	nav.navbar.navbar-inverse.navbar-fixed-top
 		.container-fluid

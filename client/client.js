@@ -9,11 +9,16 @@ const WebSocket = require('ws');
 const exec = require('child_process').exec;
 const moment = require('moment');
 const Protocol = require('./protocol');
-const SERVER = "ws:///localhost:8080";
-const RECONECT_TIMEOUT = 10000;
-const KEEP_ALIVE = 15000;
-const printConnectionStats_Interval = 180000;
 const crypto = require('crypto'), hash = crypto.getHashes();
+const dotenv = require('dotenv');
+dotenv.config();
+
+const SERVER = process.env.server ;
+const PORT = process.env.port; 
+const RECONECT_TIMEOUT = process.env.reconnect_timeout  ;
+const KEEP_ALIVE = process.env.socket_keep_alive  ;
+const printConnectionStats_Interval = process.env.printConnectionStats_Interval ;
+
 var ID = null;
 var now = new Date();
 var conn_establish_= null;
@@ -55,7 +60,7 @@ async function connect() {
 		})
 	
 	})
-	const ws = new WebSocket(SERVER);
+	const ws = new WebSocket("ws://"+SERVER+":"+PORT);
 	ws.on('error', function (e) {
 		Logger(e.code + " " + e.address + " port:" + e.port);
 	});

@@ -14,13 +14,18 @@ const path = require('path');
 const express = require('express');
 const app = express()
 const routes = require('./routes/index');
+const dotenv = require('dotenv');
+
 
 moment.suppressDeprecationWarnings = true;
+dotenv.config();
 
-const ControlPort = 3000
-const PORT = 8080;
-const KEEP_ALIVE = 10000;
-const printConnections_Interval = 30000;
+const ControlPort = process.env.web_interface_port
+const socket_server_port = process.env.socket_server_port;
+const KEEP_ALIVE = process.env.socket_keep_alive;
+const printConnections_Interval = process.env.printConnections_Interval;
+const web_user = process.env.web_user;
+const web_pass = process.env.web_pass;
 var clientInfo = [];
 
 
@@ -28,8 +33,8 @@ async function Logger(msg) {
   let now = new Date();
   console.log('[ ' + now.toLocaleTimeString() + " ] " + msg)
 }
-const wss = new WebSocket.Server({ port: PORT }, () => {
-  Logger("Server initiated , listeninng on " + PORT)
+const wss = new WebSocket.Server({ port: socket_server_port }, () => {
+  Logger("Server initiated , listeninng on " + socket_server_port)
 });
 let active = wss._server._connections;
 setInterval(printConnections, printConnections_Interval);
@@ -60,7 +65,7 @@ app.post('/auth', function (req, res) {
   var password = req.body.password;
   if (username && password) {
     //connection.query('SELECT * FROM accounts WHERE username = ? AND password = ?', [username, password], function(error, results, fields) {
-    if (username == "admin" && password == "changeme") {
+    if (username == web_user && password == web_pass) {
       req.session.loggedin = true;
       res.redirect('/dashboard');
     } else {
@@ -91,7 +96,7 @@ wss.on('connection', function connection(ws, req) {
   this.conn_establish_ = null;
   ws.on('pong', heartbeat);
   ws.onclose = event => { //ws.readyState
-    Logger("socket closed with code: "+event.code)  
+    Logger("socket closed with code: " + event.code)
     deleteByiD(ws.id)
     // event.code === 1000
     // event.reason === "Work complete"

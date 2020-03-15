@@ -14,9 +14,10 @@ const path = require('path');
 const express = require('express');
 const app = express()
 const routes = require('./routes/index');
-const ControlPort = 3000
 
-//const exec = require('child_process').exec;
+moment.suppressDeprecationWarnings = true;
+
+const ControlPort = 3000
 const PORT = 8080;
 const KEEP_ALIVE = 10000;
 const printConnections_Interval = 30000;
@@ -25,7 +26,7 @@ var clientInfo = [];
 
 async function Logger(msg) {
   let now = new Date();
-  console.log('\n[ ' + now.toLocaleTimeString() + " ] " + msg)
+  console.log('[ ' + now.toLocaleTimeString() + " ] " + msg)
 }
 const wss = new WebSocket.Server({ port: PORT }, () => {
   Logger("Server initiated , listeninng on " + PORT)

@@ -25,7 +25,7 @@ async function Logger(msg){
 		console.log(typeof(msg))
 		console.dir(  msg)
 	}else{
-		console.log('\n[ ' + now.toLocaleTimeString() + " ] "+msg)
+		console.log('[ ' + now.toLocaleTimeString() + " ] "+msg)
 	}
 	
 }

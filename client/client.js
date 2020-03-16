@@ -7,69 +7,43 @@
  */
 const WebSocket = require('ws');
 const exec = require('child_process').exec;
-const moment = require('moment');
 const Protocol = require('../protocol');
 const crypto = require('crypto'), hash = crypto.getHashes();
 const dotenv = require('dotenv');
+const Helper = require('./Helper.js');
 dotenv.config();
 
-const SERVER = process.env.server ;
-const PORT = process.env.port; 
-const RECONECT_TIMEOUT = process.env.reconnect_timeout  ;
-const KEEP_ALIVE = process.env.socket_keep_alive  ;
-const printConnectionStats_Interval = process.env.printConnectionStats_Interval ;
+const SERVER = process.env.server;
+const PORT = process.env.port;
+const RECONECT_TIMEOUT = process.env.reconnect_timeout;
+const KEEP_ALIVE = process.env.socket_keep_alive;
+const printConnectionStats_Interval = process.env.printConnectionStats_Interval;
+const Logger = Helper.Logger;
+const execCute = Helper.execCute;
 
 var ID = null;
-var now = new Date();
-var conn_establish_= null;
-
-
-async function Logger(msg){
-	now = new Date();
-	if (typeof(msg) == "object"){
-		console.log(typeof(msg))
-		console.dir(  msg)
-	}else{
-		console.log('[ ' + now.toLocaleTimeString() + " ] "+msg)
-	}
-	
-}
-
- setInterval(printConnectionStats, printConnectionStats_Interval);
-const execCute = function (command) {
-	return new Promise(function (resolve, reject) {
-		try {
-			exec(command, function (error, stdout, stderr) {
-				if (error) reject(error)
-				resolve(stdout)
-			})
-		} catch (e) {
-			reject(e)
-		}
-	})
-}
+var conn_establish_ = null;
+const printConnectionStats = function () { return Helper.printConnectionStats(conn_establish_) }
+setInterval(printConnectionStats, printConnectionStats_Interval);
 
 async function connect() {
-	ID = await execCute("hostname -I | awk '{print $1}'").then(  (result, error) => {
+	ID = await execCute("hostname -I | awk '{print $1}'").then((result, error) => {
 		if (error) Logger(error)
 		let host = result;
-	return	 execCute("uname  -nmsr").then((result, error) => {
+		return execCute("uname  -nmsr").then((result, error) => {
 			if (error) Logger(error)
 			let identity = host.concat(result)
-		return	ID = crypto.createHash('sha1').update(identity).digest('hex');
+			return ID = crypto.createHash('sha1').update(identity).digest('hex');
 		})
-	
 	})
-	const ws = new WebSocket("ws://"+SERVER+":"+PORT);
+	const ws = new WebSocket("ws://" + SERVER + ":" + PORT);
 	ws.on('error', function (e) {
 		Logger(e.code + " " + e.address + " port:" + e.port);
 	});
 	ws.on('ping', heartbeat);
 	ws.on('open', function open() {
 		let ans = { "msg": `${Protocol.Connecting}`, "id": ID }
-		//Logger(ans)
 		ws.send(JSON.stringify(ans))
-		//heartbeat();
 	});
 	ws.on('close', function close() {
 		Logger('Disconnected from server.');
@@ -77,18 +51,11 @@ async function connect() {
 		setTimeout(() => {
 			connect();
 		}, RECONECT_TIMEOUT);
-		conn_establish_= null;
+		conn_establish_ = null;
 	});
 
-	ws.on('message', async function incoming(data) {
-		let ans = JSON.parse(data);
-		//Logger(ans)
-		switch (ans.msg) {
-			case Protocol.Connected:
-				conn_establish_= new Date();
-				Logger("Connection with server established.")
-				heartbeat();
-				break;
+	async function process_command(command) {
+		switch (command) {
 			case Protocol.GET_UP_TIME:
 				execCute("uptime -s").then((result, error) => {
 					if (error) Logger(error)
@@ -117,8 +84,24 @@ async function connect() {
 				ans = await exec("shtudown now", await execCB);
 				break;
 			default:
-				now = new Date();
-				Logger(" Received not known message :" + ans);
+				Logger("Received not a known command: " + command)
+				break;
+		}
+	}
+	ws.on('message', async function incoming(data) {
+		let ans = JSON.parse(data);
+		//Logger(ans)
+		switch (ans.msg) {
+			case "execute":
+				process_command(ans.command)
+				break;
+			case Protocol.Connected:
+				conn_establish_ = new Date();
+				Logger("Connection with server established.")
+				heartbeat();
+				break;
+			default:
+				Logger(ans);
 				break;
 		}
 	});
@@ -127,14 +110,11 @@ async function connect() {
 		clearTimeout(ws.pingTimeout);
 		ws.pingTimeout = setTimeout(() => {
 			ws.terminate();
-			Logger("Terminate Connection with server")
 		}, KEEP_ALIVE);
 
 	}
 
 
 }
-async function printConnectionStats() {
-	Logger("Maintain connection since:" + moment(conn_establish_).fromNow())
-}
+
 connect();

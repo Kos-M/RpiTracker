@@ -15,28 +15,24 @@ const express = require('express');
 const app = express()
 const routes = require('./routes/index');
 const dotenv = require('dotenv');
-
-
-moment.suppressDeprecationWarnings = true;
+const Helper = require('./Helper.js');
 dotenv.config();
 
-const ControlPort = process.env.web_interface_port
-const socket_server_port = process.env.socket_server_port;
-const KEEP_ALIVE = process.env.socket_keep_alive;
-const printConnections_Interval = process.env.printConnections_Interval;
+moment.suppressDeprecationWarnings = true;
 
+const ControlPort = process.env.web_interface_port || 3000;
+const socket_server_port = process.env.socket_server_port || 8080;
+const KEEP_ALIVE = process.env.socket_keep_alive || 10000;
+//const printConnections_Interval = process.env.printConnections_Interval || 30000;
+//setInterval(printConnections, printConnections_Interval);
+const Logger = Helper.Logger;
 var clientInfo = [];
 
-
-async function Logger(msg) {
-  let now = new Date();
-  console.log('[ ' + now.toLocaleTimeString() + " ] " + msg)
-}
 const wss = new WebSocket.Server({ port: socket_server_port }, () => {
   Logger("Server initiated , listeninng on " + socket_server_port)
 });
 let active = wss._server._connections;
-setInterval(printConnections, printConnections_Interval);
+
 app.set('views', path.join(__dirname, '/views'));
 app.set('view engine', 'pug');
 
@@ -47,7 +43,6 @@ var sessionMidle = session({
   loggedin: null
 })
 app.locals.moment = require('moment');
-
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(sessionMidle);
@@ -58,10 +53,7 @@ app.use(function (req, res, next) {
 });
 
 app.use('/', routes)
-
-
 app.listen(ControlPort, () => Logger(`Admin web interface started on port ${ControlPort}`))
-
 
 function noop() { }
 function heartbeat() { // pong
@@ -69,8 +61,17 @@ function heartbeat() { // pong
   process.stdout.write("•")
 }
 wss.on('connection', function connection(ws, req) {
-  async function Send(msg) {
-    let obj = { "msg": `${msg}` }
+
+  /**
+   * Sends message , or command to client , exec is true only when sending a command!
+   *  @params {String msg , Boolean exec} 
+   */
+  async function Send(msg, exec = false) {
+    let obj = {}
+    if (exec)
+      obj = { "msg": "execute", "command": `${msg}` }
+    else
+      obj = { "msg": `${msg}` }
     let data = JSON.stringify(obj)
     ws.send(data)
   }
@@ -78,15 +79,12 @@ wss.on('connection', function connection(ws, req) {
   this.conn_establish_ = null;
   ws.on('pong', heartbeat);
   ws.onclose = event => { //ws.readyState
-    Logger("socket closed with code: " + event.code)
-    deleteByiD(ws.id)
-    // event.code === 1000
-    // event.reason === "Work complete"
-    // event.wasClean === true (clean close)
+    Logger("socket closed with code: " + event.code) // event.code === 1000  event.reason === "Work complete"  event.wasClean === true (clean close)
+    clientInfo = Helper.deleteByiD(ws.id , clientInfo)
+    active--;
   };
   ws.on('message', function incoming(message) {
     let ans = JSON.parse(message)
-    //console.dir(ans)
     switch (ans.msg) {
       case Protocol.Connecting:
         this.id = ans.id
@@ -104,9 +102,9 @@ wss.on('connection', function connection(ws, req) {
         this.conn_establish_ = new Date();
         Logger('Client ' + this.ip + ' connected ' + moment(this.conn_establish_).fromNow());
         Send(Protocol.Connected);
-        Send(Protocol.GET_UP_TIME);
-        Send(Protocol.GET_OS);
-        Send(Protocol.GET_HOST_NAME);
+        Send(Protocol.GET_UP_TIME, true);
+        Send(Protocol.GET_OS, true);
+        Send(Protocol.GET_HOST_NAME, true);
         for (let i = 0; i < clientInfo.length; i++) {
           if (clientInfo[i].id == this.id) {
             clientInfo[i].ip = this.ip;
@@ -114,11 +112,9 @@ wss.on('connection', function connection(ws, req) {
           }
           clientInfo[i].connected = this.conn_establish_;
         }
-        if (Push) {
-          clientInfo.push({ "hostname": null, "os": null, "ip": this.ip, "connected": this.conn_establish_, "uptime": this.uptime, "id": this.id })
-          active++;
-        }
-
+        if (Push) 
+          clientInfo.push({ "hostname": null, "os": null, "ip": this.ip, "connected": this.conn_establish_, "uptime": this.uptime, "id": this.id })          
+        active++;
         break;
       case Protocol.ANS_UPTIME:
         this.uptime = ans.value
@@ -162,25 +158,18 @@ this.interval = setInterval(function ping() {
       clearInterval(this.interval)
       return ws.terminate();
     }
-
     ws.isAlive = false;
     ws.ping(noop);
   });
 }, KEEP_ALIVE);
 
 async function printConnections() {
-  //Logger("Connections:" + wss._server._connections)
-  active = wss._server._connections
+  //active = wss._server._connections
+  //Logger("Connections:" + active)
   // for (i = 0; i < clientInfo.length; i++)
   //  console.dir(clientInfo[i])
 }
-function deleteByiD(id) {
-  for (let i = 0; i < clientInfo.length; i++) {
-    if (clientInfo[i].id == id) {
-      clientInfo.splice(i, 1); // remove element with index of matched id
-    }
-  }
-}
+
 
 
 

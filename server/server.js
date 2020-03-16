@@ -24,8 +24,7 @@ const ControlPort = process.env.web_interface_port
 const socket_server_port = process.env.socket_server_port;
 const KEEP_ALIVE = process.env.socket_keep_alive;
 const printConnections_Interval = process.env.printConnections_Interval;
-const web_user = process.env.web_user;
-const web_pass = process.env.web_pass;
+
 var clientInfo = [];
 
 
@@ -60,24 +59,7 @@ app.use(function (req, res, next) {
 
 app.use('/', routes)
 
-app.post('/auth', function (req, res) {
-  var username = req.body.username;
-  var password = req.body.password;
-  if (username && password) {
-    //connection.query('SELECT * FROM accounts WHERE username = ? AND password = ?', [username, password], function(error, results, fields) {
-    if (username == web_user && password == web_pass) {
-      req.session.loggedin = true;
-      res.redirect('/dashboard');
-    } else {
-      res.send('Incorrect Username and/or Password!');
-    }
-    res.end();
-    //	});
-  } else {
-    res.send('Please enter Username and Password!');
-    res.end();
-  }
-});
+
 app.listen(ControlPort, () => Logger(`Admin web interface started on port ${ControlPort}`))
 
 
@@ -191,12 +173,6 @@ async function printConnections() {
   active = wss._server._connections
   // for (i = 0; i < clientInfo.length; i++)
   //  console.dir(clientInfo[i])
-}
-function uuidv4() {
-  return 'xxx-xxxx-xxxx'.replace(/[xy]/g, function (c) {
-    var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
-    return v.toString(16);
-  });
 }
 function deleteByiD(id) {
   for (let i = 0; i < clientInfo.length; i++) {

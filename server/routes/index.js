@@ -1,19 +1,39 @@
 var express = require('express');
 var router = express.Router();
 const path = require('path');
+const dotenv = require('dotenv');
+dotenv.config();
+const web_user = process.env.web_user;
+const web_pass = process.env.web_pass;
 
 router.get('/', function (req, res, next) {
     if (!req.session.loggedin)
-        res.render(path.join(__dirname +'/../'+ '/views/login'));
+        res.render(path.join(__dirname + '/../' + '/views/login'));
     else
         res.redirect('/dashboard');
 })
+router.post('/auth', function (req, res) {
+    var username = req.body.username;
+    var password = req.body.password;
+    if (username && password) {
+        if (username == web_user && password == web_pass) {
+            req.session.loggedin = true;
+            res.redirect('/dashboard');
+        } else {
+            res.send('Incorrect Username and/or Password!');
+        }
+        res.end();
+    } else {
+        res.send('Please enter Username and Password!');
+        res.end();
+    }
+});
 router.get('/dashboard', function (req, res, next) {
-    if (req.session.loggedin){
-        res.render('dashboard', { active: res.active  , clientInfo: res.clientInfo});
-        
-    }       
-    else 
+    if (req.session.loggedin) {
+        res.render('dashboard', { active: res.active, clientInfo: res.clientInfo });
+
+    }
+    else
         res.redirect('/');
 })
 router.get('/dashboard.css', function (req, res, next) {
@@ -36,8 +56,8 @@ router.get('/logout', function (req, res, next) {
     req.session.loggedin = false;
     res.redirect('/');
 })
-router.get('*', function(req, res){
-    res.render('404' );
+router.get('*', function (req, res) {
+    res.render('404');
 })
 
 

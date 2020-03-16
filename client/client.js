@@ -8,7 +8,7 @@
 const WebSocket = require('ws');
 const exec = require('child_process').exec;
 const moment = require('moment');
-const Protocol = require('./protocol');
+const Protocol = require('../protocol');
 const crypto = require('crypto'), hash = crypto.getHashes();
 const dotenv = require('dotenv');
 dotenv.config();

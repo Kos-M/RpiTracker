@@ -6,7 +6,7 @@
  * in order all clients can reach it .All connections are client initiated , server is here to gather all info.
  */
 const WebSocket = require('ws');
-const Protocol = require('./protocol');
+const Protocol = require('../protocol');
 const moment = require('moment');
 const session = require('express-session');
 const bodyParser = require('body-parser');

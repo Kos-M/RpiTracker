@@ -136,7 +136,7 @@ wss.on('connection', function connection(ws, req) {
         this.host_name = ans.value;
         for (let x = 0; x < clientInfo.length; x++) {
           if (clientInfo[x].id === this.id) {
-            clientInfo[x].hostname = this.host_name;
+            clientInfo[x].hostname = this.host_name;            
           }
         }
         break;
@@ -153,8 +153,8 @@ wss.on('connection', function connection(ws, req) {
 this.interval = setInterval(function ping() {
   wss.clients.forEach(function each(ws) {
     if (ws.isAlive === false) {
-      Logger("terminate session")
-      deleteByiD(ws.id)
+      Logger("Clean innactive client id:"+ws.id+" ip:"+ws.ip+ " hostname:"+ws.host_name||null )
+      clientInfo = Helper.deleteByiD(ws.id , clientInfo)
       clearInterval(this.interval)
       return ws.terminate();
     }

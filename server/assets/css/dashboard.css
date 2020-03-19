@@ -1,0 +1,176 @@
+/*
+ * Base structure
+ */
+
+/* Move down content because we have a fixed navbar that is 50px tall */
+
+body {
+  padding-top: 85px;
+  background-color: #111;
+  color: #428bca;
+  /*background-image: url("../assets/img/repeat.png");*/
+  background-image: radial-gradient(circle at 16% 83%, rgba(148, 148, 148, 0.06) 0%, rgba(148, 148, 148, 0.06) 50%, rgba(63, 63, 63, 0.06) 50%, rgba(63, 63, 63, 0.06) 100%), radial-gradient(circle at 68% 87%, rgba(66, 66, 66, 0.06) 0%, rgba(66, 66, 66, 0.06) 50%, rgba(105, 105, 105, 0.06) 50%, rgba(105, 105, 105, 0.06) 100%), radial-gradient(circle at 38% 50%, rgba(123, 123, 123, 0.06) 0%, rgba(123, 123, 123, 0.06) 50%, rgba(172, 172, 172, 0.06) 50%, rgba(172, 172, 172, 0.06) 100%), linear-gradient(90deg, hsl(18, 0%, 1%), hsl(18, 0%, 1%));
+  background-attachment: fixed;
+}
+
+.navbar-inverse {
+  background-color: #111111a3;
+}
+
+/*
+ * Global add-ons
+ */
+
+.sub-header {
+  padding-bottom: 10px;
+  border-bottom: 1px solid #eee;
+}
+
+/*
+ * Top navigation
+ * Hide default border to remove 1px line.
+ */
+
+.navbar-fixed-top {
+  border: 0;
+}
+
+/*
+ * Sidebar
+ */
+
+/* Hide for mobile, show later */
+
+.sidebar {
+  display: none;
+}
+
+/* @media (min-width: 768px) {*/
+
+@media (min-width: 400px) {
+  .sidebar {
+    position: fixed;
+    top: 85px;
+    bottom: 0;
+    left: 0;
+    z-index: 1000;
+    display: block;
+    padding: 20px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    /* Scrollable contents if viewport is shorter than content. */
+    background-color: #00000029;
+    /*background-image: url("../assets/img/repeat.png");
+    background-attachment: fixed;*/
+    border-right: 1px solid #000;
+  }
+  .sidebar, ol, ul {
+    text-align: center;
+  }
+  /* Sidebar navigation */
+  .nav-sidebar {
+    margin-right: -21px;
+    /* 20px padding + 1px border */
+    margin-bottom: 20px;
+    margin-left: -20px;
+  }
+  .nav-sidebar>li>a {
+    padding-right: 20px;
+    padding-left: 20px;
+  }
+  /*
+ * Main content
+ */
+  .main {
+    padding: 20px;
+  }
+  @media (min-width: 768px) {
+    .main {
+      padding-right: 40px;
+      padding-left: 40px;
+    }
+  }
+  .main .page-header {
+    margin-top: 0;
+  }
+  /*
+ * Placeholder dashboard ideas
+ */
+  .placeholders {
+    margin-bottom: 30px;
+    text-align: center;
+  }
+  .placeholders h4 {
+    margin-bottom: 0;
+  }
+  .placeholder {
+    margin-bottom: 20px;
+  }
+  .placeholder img {
+    display: inline-block;
+    border-radius: 50%;
+  }
+}
+
+.table>tbody>tr>td, .table>tbody>tr>th, .table>tfoot>tr>td, .table>tfoot>tr>th, .table>thead>tr>td, .table>thead>tr>th {
+  padding: 8px;
+  line-height: 1.42857143;
+  vertical-align: top;
+  border-top: 1px solid #000;
+}
+
+tr:hover td {
+  background-color: #1f2d2d;
+  color: #fff;
+}
+
+tr td {
+  color: #265946;
+}
+
+#navbar .h4, .h5, .h6, h4, h5, h6 {
+  margin-top: 1px;
+  margin-bottom: 1px;
+}
+
+.table>thead>tr>th {
+  border-bottom: #000;
+}
+
+.page-header {
+  border-bottom: transparent;
+}
+
+.nav-sidebar>.active>a, .nav-sidebar>.active>a:hover, .nav-sidebar>.active>a:focus {
+  color: #fff;
+  background-color: #1d4859;
+}
+
+.nav-sidebar>li>a:hover {
+  background-color: #1d4859;
+  color: #fff;
+}
+
+td, th {
+  background: #131313;
+}
+
+#notFound {
+  font-family: Tahoma, Geneva, sans-serif;
+  display: none;
+  text-align: center;
+  color: #c4c462;
+  font-size: 0.4em;
+  line-height: 2;
+}
+
+#devices {
+  color: #fff;
+  display: none;
+  font-size: 0.7em;
+  line-height: 2;
+}
+
+#page-header {
+  display: none;  
+}

@@ -3,13 +3,12 @@ head
   meta(charset='utf-8')
   title RpiTracker Login
   style.
-    body{
-      
-      color:#fff;
-      background-image: url("/assets/img/login.png") !important;
+    body{      
+      color:#fff;      
+      /*background-image: linear-gradient(135deg, rgb(59, 72, 175) 0%, rgb(59, 72, 175) 31%,rgb(55, 66, 150) 31%, rgb(55, 66, 150) 46%,rgb(51, 60, 126) 46%, rgb(51, 60, 126) 56%,rgb(48, 54, 101) 56%, rgb(48, 54, 101) 83%,rgb(44, 48, 77) 83%, rgb(44, 48, 77) 93%,rgb(40, 42, 52) 93%, rgb(40, 42, 52) 100%) ;      
+     */ background-image: linear-gradient(135deg, rgb(16, 16, 60) 0%, rgb(16, 23, 49) 31%,rgb(15, 12, 15) 31%, rgb(55, 66, 150) 46%,rgb(51, 60, 126) 46%, rgb(0, 0, 0) 56%,rgb(0, 0, 0) 56%, rgb(33, 41, 106) 83%,rgb(11, 17, 55) 53%, rgb(44, 48, 77) 93%,rgb(40, 42, 52) 93%, rgb(0, 0, 0) 12345%);
       background-attachment: fixed;
-      background-repeat:repeat;
-      background: #00151c;
+      background-repeat:repeat;      
     }
     a , a:visited {
       text-decoration:none;
@@ -63,11 +62,15 @@ head
     }
     
 .login-form  
+  br
   h1(style='font-family: Tahoma, Geneva, sans-serif;') 
     a(href='/') RpiTracker
+  br
   h3(style='text-align:center') Login
   form(action='auth' method='POST')
     input(type='text' name='username' placeholder='Username' required='')
     input(type='password' name='password' placeholder='Password' required='')
     input(type='submit' value='LogIn' autofocus)
+  if (input_alert)
+    h3(style='text-align:center;color:#e8b02c;font-size: 0.8em;') Check again your username/password , are not valid!
      

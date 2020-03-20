@@ -12,8 +12,8 @@ const session = require('express-session');
 const bodyParser = require('body-parser');
 const path = require('path');
 const express = require('express');
-const app = express()
-const routes = require('./routes/index');
+var app = express()
+const router = require('./routes/index')(app);
 const dotenv = require('dotenv');
 const Helper = require('./Helper.js');
 dotenv.config();
@@ -23,6 +23,8 @@ moment.suppressDeprecationWarnings = true;
 const ControlPort = process.env.web_interface_port || 3000;
 const socket_server_port = process.env.socket_server_port || 8080;
 const KEEP_ALIVE = process.env.socket_keep_alive || 10000;
+const StatRefrRate = process.env.StatRefrRate || 20000;
+
 //const printConnections_Interval = process.env.printConnections_Interval || 30000;
 //setInterval(printConnections, printConnections_Interval);
 const Logger = Helper.Logger;
@@ -49,10 +51,13 @@ app.use(sessionMidle);
 app.use(function (req, res, next) {
   res.active = active;
   res.clientInfo = clientInfo;
+  app.locals.active = active;
+  app.locals.clientInfo = clientInfo;
+  app.locals.StatRefrRate = StatRefrRate;
   next();
 });
 
-app.use('/', routes)
+app.use('/', router)
 app.listen(ControlPort, () => Logger(`Admin web interface started on port ${ControlPort}`))
 
 function noop() { }
@@ -105,22 +110,25 @@ wss.on('connection', function connection(ws, req) {
         Send(Protocol.GET_UP_TIME, true);
         Send(Protocol.GET_OS, true);
         Send(Protocol.GET_HOST_NAME, true);
+        Send(Protocol.GET_HDD, true);
         for (let i = 0; i < clientInfo.length; i++) {
           if (clientInfo[i].id == this.id) {
             clientInfo[i].ip = this.ip;
+            clientInfo[i].connected = this.conn_establish_;
             Push = false;
           }
-          clientInfo[i].connected = this.conn_establish_;
+          
         }
         if (Push) 
-          clientInfo.push({ "hostname": null, "os": null, "ip": this.ip, "connected": this.conn_establish_, "uptime": this.uptime, "id": this.id })          
+          clientInfo.push({ "hostname": null, "os": null, "ip": this.ip, "connected": this.conn_establish_, "uptime": this.uptime, 
+          "id": this.id , hdd:{"size":null}})          
         active++;
         break;
       case Protocol.ANS_UPTIME:
         this.uptime = ans.value
         for (let x = 0; x < clientInfo.length; x++) {
           if (clientInfo[x].id === this.id) {
-            clientInfo[x].uptime = this.uptime;
+            clientInfo[x].uptime = this.uptime.replace(/^\s+|\s+$/g, '');
           }
         }
         break;
@@ -137,6 +145,14 @@ wss.on('connection', function connection(ws, req) {
         for (let x = 0; x < clientInfo.length; x++) {
           if (clientInfo[x].id === this.id) {
             clientInfo[x].hostname = this.host_name;            
+          }
+        }
+        break;
+      case Protocol.ANS_HDD:
+        this.hdd = ans.value;
+        for (let x = 0; x < clientInfo.length; x++) {
+          if (clientInfo[x].id === this.id) {
+            clientInfo[x].hdd = this.hdd;            
           }
         }
         break;
@@ -166,11 +182,8 @@ this.interval = setInterval(function ping() {
 async function printConnections() {
   //active = wss._server._connections
   //Logger("Connections:" + active)
-  // for (i = 0; i < clientInfo.length; i++)
-  //  console.dir(clientInfo[i])
+   for (i = 0; i < clientInfo.length; i++)
+    console.dir(clientInfo[i])
 }
-
-
-
 
 

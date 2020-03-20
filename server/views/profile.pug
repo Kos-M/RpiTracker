@@ -5,7 +5,6 @@ append styles
 block scripts
 	script(src="https://code.jquery.com/jquery-3.4.1.min.js")
 	script(src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment-with-locales.min.js")
-	script(src="/assets/scripts/device.js")
 	
 	
 block body  
@@ -33,7 +32,7 @@ block body
 		.row
 			.col-sm-3.col-md-2.sidebar
 				ul.nav.nav-sidebar
-					li.active
+					li
 						a(href='/') Dashboard							   
 							span.sr-only (current)
 					li
@@ -42,43 +41,4 @@ block body
 					li
 						a(href='') Nav item			
 			.col-sm-9.col-sm-offset-3.col-md-10.col-md-offset-2.main#cont_ainer
-				h1.page-header#page-header
-					span
-						span#devices Devices:
-							span#dev_value #{active}
-						br
-						span#notFound Not found any device connected..
-					//span#clientInfo #{clientInfo.length}
-					//h2.sub-header Section title
-				#respon_sive_container
-					if (clientInfo.length >0)	
-						.table-responsive
-							table.table.table-striped
-								thead
-									tr
-										th #								 
-										th Hostname
-										th Os
-										th Ip
-										th Connected
-										th Uptime								
-										th Id
-								tbody#the_body
-								- var i=0
-									each val , index  in clientInfo	
-										tr
-											td= index+1									
-												each key in val																					
-														if (key == val.connected)
-															td= moment(key).fromNow()
-														else if (key == val.uptime)
-															td(style="color:#919119")= moment(key).fromNow()	
-														else if (key == val.id)
-																td(style="color:#2d4823")=key								 
-														else
-															-	//console.log(val)
-															-	if (  i > 5)													
-																-	break
-															td=key
-														-	i= i+1
-											-	i=0
+		

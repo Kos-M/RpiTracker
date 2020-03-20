@@ -23,6 +23,7 @@ moment.suppressDeprecationWarnings = true;
 const ControlPort = process.env.web_interface_port || 3000;
 const socket_server_port = process.env.socket_server_port || 8080;
 const KEEP_ALIVE = process.env.socket_keep_alive || 10000;
+const StatRefrRate = process.env.StatRefrRate || 20000;
 
 //const printConnections_Interval = process.env.printConnections_Interval || 30000;
 //setInterval(printConnections, printConnections_Interval);
@@ -52,6 +53,7 @@ app.use(function (req, res, next) {
   res.clientInfo = clientInfo;
   app.locals.active = active;
   app.locals.clientInfo = clientInfo;
+  app.locals.StatRefrRate = StatRefrRate;
   next();
 });
 

@@ -14,6 +14,7 @@ module.exports = function (app) {
         let data = {}
         data.active = app.locals.active
         data.clients = app.locals.clientInfo;
+        data.StatRefrRate = app.locals.StatRefrRate;
         // console.dir(data)
         cb(data);
     }

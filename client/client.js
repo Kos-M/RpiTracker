@@ -106,7 +106,7 @@ async function connect() {
 				break;
 			case Protocol.Connected:
 				conn_establish_ = new Date();
-				Logger("Connection with server established.")
+				Logger("Connection with server ["+SERVER+":"+PORT+"] established.")
 				heartbeat();
 				break;
 			default:

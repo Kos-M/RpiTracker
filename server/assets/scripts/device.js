@@ -1,6 +1,5 @@
 
 function createTable(data) {
-    console.log("createTable")
 
     var responsive = document.createElement('div');
     var table = document.createElement('table');
@@ -42,7 +41,7 @@ function createTable(data) {
     fillData(data)
 }
 function fillData(data) {
-    console.log("fillData")
+
     $("#the_body").html("")
     $("table tbody").html("")
     for (let i = 0; i < data.length; i++) {
@@ -80,26 +79,33 @@ function fillData(data) {
 
 }
 
-function update() {
-    $.get("/results", function (data) {
-
-        $("#dev_value").text(" " + data.active)
-        if (data.clients.length == 0) {
-            $("#respon_sive_container").html("") //emptu table div
-            $("#devices").css("display", "none")
-            $("#notFound").css("display", "block")
-            $("#page-header").css("display", "block")
-        } else {
-            $("#notFound").css("display", "none")
-            $("#devices").css("display", "block")
-            $("#page-header").css("display", "block")
-            if (!document.getElementById('the_body')) {
-                createTable(data.clients)
-                return;
+async function update() {
+    return prom = new Promise((resolve, reject) => {
+        return $.get("/results", (data) => {
+            $("body").fadeIn("100")
+            $("#dev_value").text(" " + data.active)
+            if (data.clients.length == 0) {
+                $("#respon_sive_container").html("") //emptu table div
+                $("#devices").css("display", "none")
+                $("#notFound").css("display", "block")
+                $("#page-header").css("display", "block")
+            } else {
+                $("#notFound").css("display", "none")
+                $("#devices").css("display", "block")
+                $("#page-header").css("display", "block")
+                if (!document.getElementById('the_body')) {
+                    createTable(data.clients)
+                    return;
+                }
+                fillData(data.clients)
             }
-            fillData(data.clients)
-        }    
+            resolve(data);
+        })
     })
+
+
 }
-update()
-setTimeout(setInterval(update, 5000), 2000)
+update().then((res, error) => {
+    setTimeout(setInterval(update, res.StatRefrRate), 1000)
+})
+

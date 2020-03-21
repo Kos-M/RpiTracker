@@ -9,10 +9,8 @@ const WebSocket = require('ws');
 const exec = require('child_process').exec;
 const Protocol = require('../protocol');
 const crypto = require('crypto'), hash = crypto.getHashes();
-const dotenv = require('dotenv');
+require('dotenv').config({path:__dirname+'/.env'})
 const Helper = require('./Helper.js');
-dotenv.config();
-
 const SERVER = process.env.server || "localhost";
 const PORT = process.env.port || 8080;
 const RECONECT_TIMEOUT = process.env.reconnect_timeout || 30000;
@@ -81,16 +79,23 @@ async function connect() {
 				execCute(" df -h / |  gawk -d  '{ print $2}';df -h / |  gawk -d  '{ print $3}';df -h / |  gawk -d  '{ print $4}';df -h / |  gawk -d  '{ print $5}'").then((result, error) => { // WIP
 					if (error) Logger(error)
 					result = result.split('\n')
-					let obj = { "Size":result[1],"Used":result[3],"Available":result[5],"UsedPercent":result[7]}					
+					let obj = { "Size": result[1], "Used": result[3], "Available": result[5], "UsedPercent": result[7] }
 					let z = { "msg": `${Protocol.ANS_HDD}`, "value": obj }
 					ws.send(JSON.stringify(z))
 				})
 				break;
 			case Protocol.DO_REBOOT:
-				exec("reboot now", await execCB);
+				execCute("reboot now").then((result, error) => {
+					if (error) Logger(error)
+				})
 				break;
 			case Protocol.DO_SHUTDOWN:
-				ans = await exec("shtudown now", await execCB);
+				execCute("shutdown now").then((result, error) => {
+					if (error) Logger(error)
+				})
+				break;
+			case Protocol.DisConnect:
+				ws.terminate()
 				break;
 			default:
 				Logger("Received not a known command: " + command)
@@ -106,7 +111,7 @@ async function connect() {
 				break;
 			case Protocol.Connected:
 				conn_establish_ = new Date();
-				Logger("Connection with server ["+SERVER+":"+PORT+"] established.")
+				Logger("Connection with server [" + SERVER + ":" + PORT + "] established.")
 				heartbeat();
 				break;
 			default:

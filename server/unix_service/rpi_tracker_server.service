@@ -1,0 +1,9 @@
+[Unit]
+Description=RpiTracker Server
+
+[Service]
+ExecStart=/usr/bin/node  /usr/local/sbin/RpiTracker/server/server.js
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

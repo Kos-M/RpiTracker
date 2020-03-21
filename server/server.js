@@ -14,9 +14,9 @@ const path = require('path');
 const express = require('express');
 var app = express()
 const router = require('./routes/index')(app);
-const dotenv = require('dotenv');
+require('dotenv').config({path:__dirname+'/.env'})
 const Helper = require('./Helper.js');
-dotenv.config();
+
 
 moment.suppressDeprecationWarnings = true;
 
@@ -65,12 +65,12 @@ function heartbeat() { // pong
   this.isAlive = true;
   process.stdout.write("•")
 }
-wss.on('connection', function connection(ws, req) {
 
+wss.on('connection', function connection(ws, req) {
   /**
-   * Sends message , or command to client , exec is true only when sending a command!
-   *  @params {String msg , Boolean exec} 
-   */
+ * Sends message , or command to client , exec is true only when sending a command!
+ *  @params {String msg , Boolean exec} 
+ */
   async function Send(msg, exec = false) {
     let obj = {}
     if (exec)
@@ -80,12 +80,13 @@ wss.on('connection', function connection(ws, req) {
     let data = JSON.stringify(obj)
     ws.send(data)
   }
+
   ws.isAlive = true;
   this.conn_establish_ = null;
   ws.on('pong', heartbeat);
   ws.onclose = event => { //ws.readyState
     Logger("socket closed with code: " + event.code) // event.code === 1000  event.reason === "Work complete"  event.wasClean === true (clean close)
-    clientInfo = Helper.deleteByiD(ws.id , clientInfo)
+    clientInfo = Helper.deleteByiD(ws.id, clientInfo)
     active--;
   };
   ws.on('message', function incoming(message) {
@@ -117,11 +118,12 @@ wss.on('connection', function connection(ws, req) {
             clientInfo[i].connected = this.conn_establish_;
             Push = false;
           }
-          
         }
-        if (Push) 
-          clientInfo.push({ "hostname": null, "os": null, "ip": this.ip, "connected": this.conn_establish_, "uptime": this.uptime, 
-          "id": this.id , hdd:{"size":null}})          
+        if (Push)
+          clientInfo.push({
+            "hostname": null, "os": null, "ip": this.ip, "connected": this.conn_establish_, "uptime": this.uptime,
+            "id": this.id, hdd: { "size": null }, "ws": this
+          })
         active++;
         break;
       case Protocol.ANS_UPTIME:
@@ -144,7 +146,15 @@ wss.on('connection', function connection(ws, req) {
         this.host_name = ans.value;
         for (let x = 0; x < clientInfo.length; x++) {
           if (clientInfo[x].id === this.id) {
-            clientInfo[x].hostname = this.host_name;            
+            clientInfo[x].hostname = this.host_name;
+          }
+        }
+        break;
+      case Protocol.ANS_HDD:
+        this.hdd = ans.value;
+        for (let x = 0; x < clientInfo.length; x++) {
+          if (clientInfo[x].id === this.id) {
+            clientInfo[x].hdd = this.hdd;
           }
         }
         break;
@@ -164,13 +174,14 @@ wss.on('connection', function connection(ws, req) {
         }
         Logger("Unknown type of incomming message :" + ans)
     }
-  });
+  })
+
 });
 this.interval = setInterval(function ping() {
   wss.clients.forEach(function each(ws) {
     if (ws.isAlive === false) {
-      Logger("Clean innactive client id:"+ws.id+" ip:"+ws.ip+ " hostname:"+ws.host_name||null )
-      clientInfo = Helper.deleteByiD(ws.id , clientInfo)
+      Logger("Clean innactive client id:" + ws.id + " ip:" + ws.ip + " hostname:" + ws.host_name || null)
+      clientInfo = Helper.deleteByiD(ws.id, clientInfo)
       clearInterval(this.interval)
       return ws.terminate();
     }
@@ -182,8 +193,19 @@ this.interval = setInterval(function ping() {
 async function printConnections() {
   //active = wss._server._connections
   //Logger("Connections:" + active)
-   for (i = 0; i < clientInfo.length; i++)
+  for (i = 0; i < clientInfo.length; i++)
     console.dir(clientInfo[i])
 }
 
+const SendAction = async function SendAction(action, id) {
+  console.log("SendAction " + action + " id:" + id)
+  let ob = { "msg": "execute", "command": action }
+  ob = JSON.stringify(ob)
+  for (i = 0; i < clientInfo.length; i++)
+    if (clientInfo[i].id == id) {
+      clientInfo[i].ws.send(ob)
+      break;
+    }
+}
 
+module.exports.send_action = SendAction;

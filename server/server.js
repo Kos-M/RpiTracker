@@ -158,6 +158,14 @@ wss.on('connection', function connection(ws, req) {
           }
         }
         break;
+      case Protocol.ANS_HDD:
+        this.hdd = ans.value;
+        for (let x = 0; x < clientInfo.length; x++) {
+          if (clientInfo[x].id === this.id) {
+            clientInfo[x].hdd = this.hdd;            
+          }
+        }
+        break;
       default:
         if (typeof (ans) != String) {
           Logger("Uknown type of Object")
@@ -198,7 +206,6 @@ const SendAction = async function SendAction(action, id) {
       clientInfo[i].ws.send(ob)
       break;
     }
-
 }
 
 module.exports.send_action = SendAction;

@@ -8,7 +8,6 @@ module.exports = function (app) {
     const web_pass = process.env.web_pass;
     var input_alert = false;
     var i = 0;
-
     function getResults(cb) {
         let data = {}
         data.active = app.locals.active
@@ -19,7 +18,6 @@ module.exports = function (app) {
 
     router.use('/static', express.static(__dirname + "/../"+'assets'))
     router.get('/', function (req, res, next) {
-
         if (!req.session.loggedin)
             res.render(path.join(__dirname + '/../' + '/views/login'), { input_alert: false });
         else
@@ -81,3 +79,4 @@ module.exports = function (app) {
 
     return router
 }
+

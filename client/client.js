@@ -11,9 +11,6 @@ const Protocol = require('../protocol');
 const crypto = require('crypto'), hash = crypto.getHashes();
 require('dotenv').config({path:__dirname+'/.env'})
 const Helper = require('./Helper.js');
-
-
-
 const SERVER = process.env.server || "localhost";
 const PORT = process.env.port || 8080;
 const RECONECT_TIMEOUT = process.env.reconnect_timeout || 30000;
@@ -60,7 +57,7 @@ async function connect() {
 			case Protocol.GET_UP_TIME:
 				execCute("uptime -s").then((result, error) => {
 					if (error) Logger(error)
-					let x = { "msg": `${Protocol.ANS_UPTIME}`, "value": result }
+					let x = { "msg": `${Protocol.ANS_UPTIME}`, "value": result }			
 					ws.send(JSON.stringify(x))
 				})
 				break;

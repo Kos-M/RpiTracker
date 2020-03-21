@@ -59,7 +59,7 @@ async function connect() {
 			case Protocol.GET_UP_TIME:
 				execCute("uptime -s").then((result, error) => {
 					if (error) Logger(error)
-					let x = { "msg": `${Protocol.ANS_UPTIME}`, "value": result }			
+					let x = { "msg": `${Protocol.ANS_UPTIME}`, "value": result }
 					ws.send(JSON.stringify(x))
 				})
 				break;
@@ -81,16 +81,23 @@ async function connect() {
 				execCute(" df -h / |  gawk -d  '{ print $2}';df -h / |  gawk -d  '{ print $3}';df -h / |  gawk -d  '{ print $4}';df -h / |  gawk -d  '{ print $5}'").then((result, error) => { // WIP
 					if (error) Logger(error)
 					result = result.split('\n')
-					let obj = { "Size":result[1],"Used":result[3],"Available":result[5],"UsedPercent":result[7]}					
+					let obj = { "Size": result[1], "Used": result[3], "Available": result[5], "UsedPercent": result[7] }
 					let z = { "msg": `${Protocol.ANS_HDD}`, "value": obj }
 					ws.send(JSON.stringify(z))
 				})
 				break;
 			case Protocol.DO_REBOOT:
-				exec("reboot now", await execCB);
+				execCute("reboot now").then((result, error) => {
+					if (error) Logger(error)
+				})
 				break;
 			case Protocol.DO_SHUTDOWN:
-				ans = await exec("shtudown now", await execCB);
+				execCute("shutdown now").then((result, error) => {
+					if (error) Logger(error)
+				})
+				break;
+			case Protocol.DisConnect:
+				ws.terminate()
 				break;
 			default:
 				Logger("Received not a known command: " + command)
@@ -106,7 +113,7 @@ async function connect() {
 				break;
 			case Protocol.Connected:
 				conn_establish_ = new Date();
-				Logger("Connection with server ["+SERVER+":"+PORT+"] established.")
+				Logger("Connection with server [" + SERVER + ":" + PORT + "] established.")
 				heartbeat();
 				break;
 			default:

@@ -118,6 +118,10 @@ body {
   line-height: 1.42857143;
   vertical-align: top;
   border-top: 1px solid #000;
+  user-select: none;
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
 }
 
 tr:hover td {

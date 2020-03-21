@@ -1,11 +1,13 @@
 extends ./_bootstrap
 append styles
 	// Custom styles for this template
-	link(href='/dashboard.css',   rel='stylesheet')
+	link(href='/static/css/context.css',   rel='stylesheet')
+	link(href='/static/css/dashboard.css',   rel='stylesheet')
 block scripts
 	script(src="https://code.jquery.com/jquery-3.4.1.min.js")
 	script(src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment-with-locales.min.js")
-	script(src="/assets/scripts/device.js")
+	script(src="/static/scripts/device.js")
+	script(src="/static/scripts/context.js")
 	
 	
 block body  
@@ -82,3 +84,15 @@ block body
 															td=key
 														-	i= i+1
 											-	i=0
+			
+				div.menu
+						ul.menu-options
+							li.menu-option.menu-disconnect
+								span(style="color:orange").right-space.glyphicon.glyphicon-remove-sign 
+								span Disconnect							
+							li.menu-option.menu-shutdown
+								span(style="color:red").right-space.glyphicon.glyphicon-stop 
+								span Shutdown							
+							li.menu-option.menu-reboot
+								span(style="color:green").right-space.glyphicon.glyphicon-refresh 
+								span Reboot

@@ -9,9 +9,10 @@ const WebSocket = require('ws');
 const exec = require('child_process').exec;
 const Protocol = require('../protocol');
 const crypto = require('crypto'), hash = crypto.getHashes();
-const dotenv = require('dotenv');
+require('dotenv').config({path:__dirname+'/.env'})
 const Helper = require('./Helper.js');
-dotenv.config();
+
+
 
 const SERVER = process.env.server || "localhost";
 const PORT = process.env.port || 8080;

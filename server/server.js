@@ -14,9 +14,9 @@ const path = require('path');
 const express = require('express');
 var app = express()
 const router = require('./routes/index')(app);
-const dotenv = require('dotenv');
+require('dotenv').config({path:__dirname+'/.env'})
 const Helper = require('./Helper.js');
-dotenv.config();
+
 
 moment.suppressDeprecationWarnings = true;
 
@@ -169,8 +169,6 @@ wss.on('connection', function connection(ws, req) {
   })
 
 });
-
-
 this.interval = setInterval(function ping() {
   wss.clients.forEach(function each(ws) {
     if (ws.isAlive === false) {

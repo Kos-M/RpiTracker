@@ -3,8 +3,7 @@ module.exports = function (app) {
     var router = express.Router();
     const path = require('path');
     const SendAction = require("../server")
-    const dotenv = require('dotenv');
-    dotenv.config();
+    require('dotenv').config({path:__dirname+'/../.env'})
     const web_user = process.env.web_user;
     const web_pass = process.env.web_pass;
     var input_alert = false;
@@ -18,7 +17,7 @@ module.exports = function (app) {
         cb(data);
     }
 
-    router.use('/static', express.static('assets'))
+    router.use('/static', express.static(__dirname + "/../"+'assets'))
     router.get('/', function (req, res, next) {
 
         if (!req.session.loggedin)
@@ -82,5 +81,3 @@ module.exports = function (app) {
 
     return router
 }
-
-//module.exports = router;

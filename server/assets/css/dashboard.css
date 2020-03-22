@@ -180,3 +180,6 @@ td, th {
 #page-header {
   display: none;  
 }
+.table-responsive {
+  border: transparent ;
+}

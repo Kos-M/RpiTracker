@@ -1,4 +1,36 @@
 {
+  "name": "rpi_tracker_client",
+  "version": "1.0.1",
+  "description": "Client runs on machine you want to monitor , controll over time.You be able to do daily tasks on your servers. Typically this runs as service 24/7, see unix_service folder for more.",
+  "main": "client.js",
+  "scripts": {
+    "start": "node client.js",
+    "dev": "nodemon client.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Kos-M/RpiTracker.git"
+  },
+  "keywords": [
+    "websocket",
+    "client",
+    "rpi",
+    "tracker",
+    "remote",
+    "control",
+    "client-server",
+    "socket-client",
+    "node client service"
+  ],
+  "author": "Kos-M",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Kos-M/RpiTracker/issues"
+  },
+  "homepage": "https://github.com/Kos-M/RpiTracker#readme",
+  "devDependencies": {
+    "nodemon": "^2.0.2"
+  },
   "dependencies": {
     "child_process": "^1.0.2",
     "crypto": "^1.0.1",

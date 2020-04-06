@@ -16,6 +16,7 @@ class Helper {
 		return new Promise(function (resolve, reject) {
 			try {
 				exec(command, function (error, stdout, stderr) {
+					if (stderr) reject(stderr)
 					if (error) reject(error)
 					resolve(stdout)
 				})

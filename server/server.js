@@ -25,8 +25,8 @@ const socket_server_port = process.env.socket_server_port || 8080;
 const KEEP_ALIVE = process.env.socket_keep_alive || 10000;
 const StatRefrRate = process.env.StatRefrRate || 20000;
 
-//const printConnections_Interval = process.env.printConnections_Interval || 30000;
-//setInterval(printConnections, printConnections_Interval);
+const printConnections_Interval = process.env.printConnections_Interval || 30000;
+setInterval(printConnections, printConnections_Interval);
 const Logger = Helper.Logger;
 var clientInfo = [];
 
@@ -87,7 +87,7 @@ wss.on('connection', function connection(ws, req) {
   ws.onclose = event => { //ws.readyState
     Logger("socket closed with code: " + event.code) // event.code === 1000  event.reason === "Work complete"  event.wasClean === true (clean close)
     clientInfo = Helper.deleteByiD(ws.id, clientInfo)
-    active--;
+    active = wss._server._connections
   };
   ws.on('message', function incoming(message) {
     let ans = JSON.parse(message)
@@ -166,6 +166,9 @@ wss.on('connection', function connection(ws, req) {
           }
         }
         break;
+      case "error":
+        console.dir(ans.value)
+        break
       default:
         if (typeof (ans) != String) {
           Logger("Uknown type of Object")
@@ -191,10 +194,10 @@ this.interval = setInterval(function ping() {
 }, KEEP_ALIVE);
 
 async function printConnections() {
-  //active = wss._server._connections
-  //Logger("Connections:" + active)
-  for (i = 0; i < clientInfo.length; i++)
-    console.dir(clientInfo[i])
+  active = wss._server._connections
+  Logger("Connections:" + active)
+  // for (i = 0; i < clientInfo.length; i++)
+  //   console.dir(clientInfo[i])
 }
 
 const SendAction = async function SendAction(action, id) {

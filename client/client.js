@@ -9,7 +9,7 @@ const WebSocket = require('ws');
 const exec = require('child_process').exec;
 const Protocol = require('../protocol');
 const crypto = require('crypto'), hash = crypto.getHashes();
-require('dotenv').config({path:__dirname+'/.env'})
+require('dotenv').config({ path: __dirname + '/.env' })
 const Helper = require('./Helper.js');
 const SERVER = process.env.server || "localhost";
 const PORT = process.env.port || 8080;
@@ -57,8 +57,10 @@ async function connect() {
 			case Protocol.GET_UP_TIME:
 				execCute("uptime -s").then((result, error) => {
 					if (error) Logger(error)
-					let x = { "msg": `${Protocol.ANS_UPTIME}`, "value": result }			
+					let x = { "msg": `${Protocol.ANS_UPTIME}`, "value": result }
 					ws.send(JSON.stringify(x))
+				}, (error) => {
+					ws.send(JSON.stringify({ "msg": "error", "value": error }))
 				})
 				break;
 			case Protocol.GET_OS:
@@ -66,6 +68,8 @@ async function connect() {
 					if (error) Logger(error)
 					let y = { "msg": `${Protocol.ANS_OS}`, "value": result }
 					ws.send(JSON.stringify(y))
+				}, (error) => {
+					ws.send(JSON.stringify({ "msg": "error", "value": error }))
 				})
 				break;
 			case Protocol.GET_HOST_NAME:
@@ -73,6 +77,8 @@ async function connect() {
 					if (error) Logger(error)
 					let z = { "msg": `${Protocol.ANS_HOST_NAME}`, "value": result }
 					ws.send(JSON.stringify(z))
+				}, (error) => {
+					ws.send(JSON.stringify({ "msg": "error", "value": error }))
 				})
 				break;
 			case Protocol.GET_HDD:
@@ -82,16 +88,21 @@ async function connect() {
 					let obj = { "Size": result[1], "Used": result[3], "Available": result[5], "UsedPercent": result[7] }
 					let z = { "msg": `${Protocol.ANS_HDD}`, "value": obj }
 					ws.send(JSON.stringify(z))
+				}, (error) => {
+					ws.send(JSON.stringify({ "msg": "error", "value": error }))
 				})
 				break;
 			case Protocol.DO_REBOOT:
 				execCute("reboot now").then((result, error) => {
 					if (error) Logger(error)
+				}, (error) => {
+					ws.send(JSON.stringify({ "msg": "error", "value": error }))
 				})
 				break;
 			case Protocol.DO_SHUTDOWN:
 				execCute("shutdown now").then((result, error) => {
-					if (error) Logger(error)
+				}, (error) => {
+					ws.send(JSON.stringify({ "msg": "error", "value": error }))
 				})
 				break;
 			case Protocol.DisConnect:

@@ -64,6 +64,7 @@ WantedBy=multi-user.target" > rpi_tracker_server.service
     echo "Installing rpi_tracker_server.service"
     cp ./rpi_tracker_server.service /etc/systemd/system
     systemctl  daemon-reload
+    systemctl enable rpi_tracker_server
     read -e -p  "Starting service now ? [ y/n ] : " start
     if [ "$start" == "y" ] ; then 
         service rpi_tracker_server start
@@ -78,6 +79,7 @@ function remove(){
             service rpi_tracker_server stop
         fi
         echo "Removing service"
+        systemctl disable rpi_tracker_server
         rm /etc/systemd/system/rpi_tracker_server.service
         systemctl  daemon-reload        
     else

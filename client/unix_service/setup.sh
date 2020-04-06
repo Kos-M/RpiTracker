@@ -64,6 +64,7 @@ WantedBy=multi-user.target" > rpi_tracker_client.service
     echo "Installing rpi_tracker_client.service"
     cp ./rpi_tracker_client.service /etc/systemd/system
     systemctl  daemon-reload
+    systemctl enable rpi_tracker_client
     read -e -p  "Starting service now ? [ y/n ] : " start
     if [ "$start" == "y" ] ; then 
         service rpi_tracker_client start
@@ -78,6 +79,7 @@ function remove(){
             service rpi_tracker_client stop
         fi
         echo "Removing service"
+        systemctl disable rpi_tracker_client
         rm /etc/systemd/system/rpi_tracker_client.service
         systemctl  daemon-reload        
     else
@@ -107,4 +109,4 @@ do
     esac
 done
 
- install #default
+install #default

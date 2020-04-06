@@ -26,13 +26,13 @@ window.addEventListener("click", e => {
 });
 
 const Reboot_callback = function (e) {
-    sendAction(e, target, "reboot_now");
+    sendAction(e, target, "-1");
 }
 const Disconnect_callback = function (e) {
     sendAction(e, target, "102");
 }
 const Shutdown_callback = function (e) {
-    sendAction(e, target, "shut_down_now");
+    sendAction(e, target, "0");
 }
 
 window.addEventListener("contextmenu", e => {

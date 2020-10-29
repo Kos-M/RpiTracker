@@ -7,7 +7,8 @@ block scripts
 	script(src="https://code.jquery.com/jquery-3.4.1.min.js")
 	script(src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment-with-locales.min.js")
 	script(src="/static/scripts/device.js")
-	script(src="/static/scripts/context.js")
+	script(src="/protocol.js")
+	script(src="/static/scripts/context.js",type="module")
 	
 	
 block body  
@@ -92,7 +93,10 @@ block body
 								span Disconnect							
 							li.menu-option.menu-shutdown
 								span(style="color:red").right-space.glyphicon.glyphicon-stop 
-								span Shutdown							
+								span Shutdown
+							li.menu-option.menu-halt
+								span(style="color:yellow").right-space.glyphicon.glyphicon-pause 
+								span Halt
 							li.menu-option.menu-reboot
 								span(style="color:green").right-space.glyphicon.glyphicon-refresh 
-								span Reboot
+								span Reboot								

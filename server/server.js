@@ -16,8 +16,6 @@ var app = express()
 const router = require('./routes/index')(app);
 require('dotenv').config({path:__dirname+'/.env'})
 const Helper = require('./Helper.js');
-
-
 moment.suppressDeprecationWarnings = true;
 
 const ControlPort = process.env.web_interface_port || 3000;
@@ -201,7 +199,7 @@ async function printConnections() {
 }
 
 const SendAction = async function SendAction(action, id) {
-  console.log("SendAction " + action + " id:" + id)
+  console.log("received command " + Helper.getKeyByValue(Protocol, action) + " from " + id)
   let ob = { "msg": "execute", "command": action }
   ob = JSON.stringify(ob)
   for (i = 0; i < clientInfo.length; i++)

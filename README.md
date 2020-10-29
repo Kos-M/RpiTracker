@@ -1,4 +1,4 @@
-<div align="center"> <img src="https://raw.githubusercontent.com/Kos-M/RpiTracker/devel/docs/schema.png" width="100%">
+<div align="center"> <img src="https://raw.githubusercontent.com/Kos-M/RpiTracker/devel/docs/scema.png" width="90%">
 </div> 
 
 - RpiTracker Client

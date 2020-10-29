@@ -1,3 +1,6 @@
+<div align="center"> <img src="https://raw.githubusercontent.com/Kos-M/RpiTracker/devel/docs/scema.png" width="50%">
+</div> 
+
 - RpiTracker Client
   must run on remote machine (raspberry pi) 
   

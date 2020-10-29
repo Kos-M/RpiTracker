@@ -2,3 +2,8 @@
 node_modules
 
 client/awkvars.out
+server/admin_panel/
+
+docs/schema
+
+docs/scema\.pdf

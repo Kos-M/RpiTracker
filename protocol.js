@@ -4,6 +4,7 @@ const Protocol = {
     DisConnect: "102",
     DO_REBOOT: "-1",
     DO_SHUTDOWN: "0",
+    DO_HALT: "-2",
     GET_UP_TIME: "200",
     GET_HOST_NAME: "201",
     GET_OS: "202",
@@ -16,4 +17,8 @@ const Protocol = {
         INVALID_ID: "-10"
     }
 }
-module.exports = Protocol;
+
+ if (typeof module !== 'undefined' && module.exports) {// use in node
+    module.exports = Protocol;
+}
+    

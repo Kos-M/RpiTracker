@@ -56,7 +56,7 @@ app.use(function (req, res, next) {
 });
 
 app.use('/', router)
-app.listen(ControlPort, () => Logger(`Admin web interface started on port ${ControlPort}`))
+app.listen(ControlPort, () => Logger(`Admin web interface started on http://localhost:${ControlPort}`))
 
 function noop() { }
 function heartbeat() { // pong

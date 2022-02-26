@@ -7,17 +7,21 @@ if [ "$EUID" -ne 0 ] ; then
     echo "This script must run as << root >>"    
     exit
 fi
-if ! [ -x "$(command -v curl)" ] ; then
-    apt install -y  curl 
-fi    
-if ! [ -x "$(command -v git)" ] ; then
-    apt install -y  git 
-fi
-if ! [ -x "$(command -v nodejs)" ] ; then
-    echo "Installing Nodejs v10.x"
-    bash <(curl -s https://deb.nodesource.com/setup_10.x  )
-    apt-get install -y nodejs npm
-fi
+function install_depend(){
+    echo "Check/Install dependencies.."
+    if ! [ -x "$(command -v curl)" ] ; then
+        apt install -y  curl 
+    fi    
+    if ! [ -x "$(command -v git)" ] ; then
+        apt install -y  git 
+    fi
+    if ! [ -x "$(command -v nodejs)" ] ; then
+        echo "Installing Nodejs v10.x"
+        bash <(curl -s https://deb.nodesource.com/setup_10.x  )
+        apt-get install -y nodejs npm
+    fi
+}
+
 
 function help(){
     echo "
@@ -95,9 +99,7 @@ function remove(){
     exit  
 }
 
-for i in "$@"
-do
-    case $i in
+    case $1 in
         --uninstall|-r )
             remove
             exit            
@@ -106,7 +108,8 @@ do
             help
             exit
         ;;
+        *)  
+            install_depend
+            install #default
+        ;;
     esac
-done
-
-install #default
